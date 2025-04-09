@@ -6,9 +6,10 @@ This module provides an interface for integrating security detectors into Web3la
 import logging
 from typing import Dict, Any, List, Optional
 import asyncio
-from ..detectors.base_detector import BaseDetector
-from ..detectors.multisig_detector import MultisigDetector
-from ..detectors.approvals_detector import ApprovalsDetector
+from web3sentry.detectors.base_detector import BaseDetector
+from web3sentry.detectors.multisig_detector import MultisigDetector
+from web3sentry.detectors.approvals_detector import ApprovalsDetector
+from web3sentry.utils.risk_utils import combine_detector_results
 
 logger = logging.getLogger(__name__)
 
@@ -102,13 +103,10 @@ class DetectorService:
                     **detector_results[i]
                 }
                 
-        # Calculate overall risk level
-        overall_risk = self._calculate_overall_risk(results)
+        # Use our shared utility to combine results and calculate overall risk
+        combined_results = combine_detector_results(results)
         
-        return {
-            "overall_risk": overall_risk,
-            "detector_results": results
-        }
+        return combined_results
         
     async def _analyze_with_detector(self, detector_id: str, detector: BaseDetector, 
                                     transaction_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -120,30 +118,3 @@ class DetectorService:
         except Exception as e:
             logger.error(f"Error in detector {detector_id}: {str(e)}")
             raise
-            
-    def _calculate_overall_risk(self, results: Dict[str, Dict[str, Any]]) -> str:
-        """Calculate the overall risk level from all detector results."""
-        risk_levels = []
-        
-        for detector_id, result in results.items():
-            if result.get("success", False) and "risk_level" in result:
-                risk_levels.append(result["risk_level"])
-                
-        if not risk_levels:
-            return "unknown"
-            
-        # Risk level hierarchy
-        risk_hierarchy = ["safe", "unknown", "low", "medium", "high", "critical", "error"]
-        
-        # Return the highest risk level found
-        highest_risk = "safe"
-        highest_index = risk_hierarchy.index("safe")
-        
-        for level in risk_levels:
-            if level in risk_hierarchy:
-                level_index = risk_hierarchy.index(level)
-                if level_index > highest_index:
-                    highest_index = level_index
-                    highest_risk = level
-                    
-        return highest_risk

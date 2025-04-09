@@ -1,7 +1,20 @@
 """
 Multisig Protection Custom Detector.
 
-This detector enhances security for multisig wallets by detecting:
+This detector enhances                 risk_level = "HIGH"
+                results["triggers"].append({
+                    "type": "unusual_signers",
+                    "description": "Detected unusual signers that don't match historical patterns",
+                    "signers": unusual_signers
+                })
+            
+            # Check for time-based anomalies
+            time_anomalies = self._detect_time_anomalies(signature_timestamps)
+            if time_anomalies:
+                # Only update risk level if the new one is higher priority
+                new_risk = "MEDIUM"
+                if get_risk_level_priority(new_risk) > get_risk_level_priority(results["risk_level"]):
+                    results["risk_level"] = new_riskr multisig wallets by detecting:
 - Unusual signing patterns
 - Unauthorized signing attempts
 - Quorum manipulation attacks
@@ -12,7 +25,8 @@ from typing import Dict, Any, List, Optional
 from datetime import datetime
 import json
 import logging
-from .base_detector import BaseDetector
+from web3sentry.detectors.base_detector import BaseDetector
+from web3sentry.utils.risk_utils import get_risk_level_priority
 
 logger = logging.getLogger(__name__)
 

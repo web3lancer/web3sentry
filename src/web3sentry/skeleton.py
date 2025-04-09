@@ -93,11 +93,18 @@ def parse_args(args):
 
 def setup_logging(loglevel):
     """Setup basic logging
+    
+    This configures our logging system - how verbose we want to be and
+    what format we want our log messages in.
 
     Args:
       loglevel (int): minimum loglevel for emitting messages
     """
+    # Define a nice format for our log messages with timestamps
     logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
+    
+    # Set up the basic configuration for logging
+    # We'll print to stdout with our custom format and timestamp
     logging.basicConfig(
         level=loglevel, stream=sys.stdout, format=logformat, datefmt="%Y-%m-%d %H:%M:%S"
     )
@@ -113,18 +120,30 @@ def main(args):
       args (List[str]): command line parameters as list of strings
           (for example  ``["--verbose", "42"]``).
     """
+    # Parse those command line arguments - gotta know what the user wants!
     args = parse_args(args)
+    
+    # Set up our logging based on how chatty the user wants us to be
     setup_logging(args.loglevel)
+    
+    # Let's get this party started!
     _logger.debug("Starting crazy calculations...")
+    
+    # Calculate and show the Fibonacci number to the user
     print(f"The {args.n}-th Fibonacci number is {fib(args.n)}")
-    _logger.info("Script ends here")
+    
+    # We're all done here
+    _logger.info("Script ends here - thanks for using our Fibonacci calculator!")
 
 
 def run():
     """Calls :func:`main` passing the CLI arguments extracted from :obj:`sys.argv`
 
     This function can be used as entry point to create console scripts with setuptools.
+    It's basically just a convenient way to call our main function with the
+    command line arguments.
     """
+    # Grab everything after the script name and send it to main()
     main(sys.argv[1:])
 
 
@@ -139,4 +158,5 @@ if __name__ == "__main__":
     #
     #     python -m web3sentry.skeleton 42
     #
+    # Let's fire up our script!
     run()

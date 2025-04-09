@@ -7,7 +7,8 @@ give attackers access to user assets in the Web3lancer platform.
 from typing import Dict, Any, List, Optional
 import re
 import logging
-from .base_detector import BaseDetector
+from web3sentry.detectors.base_detector import BaseDetector
+from web3sentry.utils.risk_utils import get_risk_level_priority
 
 logger = logging.getLogger(__name__)
 
@@ -225,15 +226,8 @@ class ApprovalsDetector(BaseDetector):
     
     def _get_risk_level_priority(self, risk_level):
         """Get numerical priority for risk level for comparison."""
-        risk_levels = {
-            "safe": 0,
-            "unknown": 1,
-            "low": 2,
-            "medium": 3,
-            "high": 4,
-            "critical": 5
-        }
-        return risk_levels.get(risk_level, 0)
+        # Using the shared utility function instead of duplicating the risk level mapping
+        return get_risk_level_priority(risk_level)
     
     def get_detector_info(self) -> Dict[str, Any]:
         """Return detector metadata."""
