@@ -20,17 +20,32 @@ _logger = logging.getLogger(__name__)
 
 def fib(n):
     """Fibonacci example function
+    
+    This calculates the nth Fibonacci number using an iterative approach.
+    Remember that Fibonacci sequence starts with 1, 1, 2, 3, 5, 8, 13...
+    where each number is the sum of the two preceding ones.
 
     Args:
-      n (int): integer
+      n (int): The position in the Fibonacci sequence (must be positive)
 
     Returns:
-      int: n-th Fibonacci number
+      int: The n-th Fibonacci number
+    
+    Raises:
+      AssertionError: If n is not a positive integer
     """
-    assert n > 0
+    # Hey, make sure n is positive or this won't work!
+    assert n > 0, "n must be greater than 0"
+    
+    # Starting with the first two Fibonacci numbers
     a, b = 1, 1
+    
+    # For n=1, we just return a=1 without any iteration
+    # For n>1, we need to iterate n-1 times
     for _i in range(n - 1):
+        # The classic Fibonacci calculation - each new number is the sum of the previous two
         a, b = b, a + b
+    
     return a
 
 
